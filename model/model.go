@@ -86,6 +86,9 @@ func (u *User) CreateUser(referrer string) (User, error) {
 	if err != nil {
 		return User{}, errors.New("could not create user")
 	}
+
+	u.ID = user.InsertedID.(bson.ObjectID)
+
 	if referrer != "" {
 		fmt.Println("entered here oooo!!!!!")
 		filter := bson.D{{Key: "referralID", Value: referrer}}
@@ -95,9 +98,6 @@ func (u *User) CreateUser(referrer string) (User, error) {
 			return User{}, errors.New("could not update referral for" + referrer)
 		}
 	}
-
-	u.ID = user.InsertedID.(bson.ObjectID)
-
 	return *u, err
 }
 

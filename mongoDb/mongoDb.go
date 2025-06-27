@@ -6,6 +6,7 @@ import (
 	"time"
 
 	// "github.com/Wondersmasher/Referral/env"
+	"github.com/Wondersmasher/Referral/env"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -32,8 +33,8 @@ func InitDb() {
 
 	// fmt.Println("Connected to MongoDB...")
 	fmt.Println("Connecting to MongoDB...")
-	client, _ := mongo.Connect(options.Client().ApplyURI("mongodb+srv://wondersmasher:.E.79kFRqzt57pW@golang.ydf6sqc.mongodb.net/?retryWrites=true&w=majority&appName=Golang"))
-	UserCollection = client.Database("Golang").Collection("user")
+	client, _ := mongo.Connect(options.Client().ApplyURI(env.MONGO_DB_URL))
+	UserCollection = client.Database(env.MONGO_DB_DATABASE).Collection(env.MONGO_DB_COLLECTION)
 	// err := UserCollection.Drop(context.TODO())
 	// if err != nil {
 	// 	fmt.Println("Error dropping db", err)
