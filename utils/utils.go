@@ -6,13 +6,14 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/Wondersmasher/Referral/env"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func HashPassword(password string) (string, error) {
 
-	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashed, err := bcrypt.GenerateFromPassword([]byte((password + env.SALT)), bcrypt.DefaultCost)
 
 	if err != nil {
 		return "", errors.New("could not hash password")
@@ -21,7 +22,7 @@ func HashPassword(password string) (string, error) {
 }
 
 func ValidateHashedPassword(hashedPassword, password string) bool {
-	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte((password+env.SALT))) == nil
 }
 
 func CheckStrongPassword(password string) error {
@@ -80,7 +81,7 @@ func (c *Claims) NewClaims(duration time.Time) *Claims {
 	return &Claims{
 		Email:     c.Email,
 		UserName:  c.UserName,
-		CreatedAt: c.CreatedAt,
+		CreatedAt: time.Now().String(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			ExpiresAt: jwt.NewNumericDate(duration),
@@ -91,12 +92,12 @@ func (c *Claims) NewClaims(duration time.Time) *Claims {
 		},
 	}
 }
-func CreateNewToken(email, userName, createdAt string, duration time.Time, secretKey string) (string, error) {
+func CreateNewToken(email, userName string, duration time.Time, secretKey string) (string, error) {
 	claims := Claims{
-		Email:     email,
-		UserName:  userName,
-		CreatedAt: createdAt,
+		Email:    email,
+		UserName: userName,
 	}
+	time.Now()
 
 	val, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims.NewClaims(duration)).SignedString([]byte(secretKey))
 

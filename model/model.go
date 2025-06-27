@@ -23,13 +23,29 @@ type User struct {
 	Referrals  []Referral `json:"referrals,omitempty" bson:"referrals,omitempty"`
 }
 
-// func (u *User) CreateUser() (any, error) {
-// 	user, err := mongodb.UserCollection.InsertOne(context.TODO(), u)
-// 	if err != nil {
-// 		return User{}, err
-// 	}
-// 	return user.InsertedID, err
-// }
+type Trim struct {
+	Email      string     `json:"email" bson:"email" validate:"required"`
+	Username   string     `json:"username" bson:"username" validate:"required"`
+	ReferredBy string     `json:"referredBy,omitempty" bson:"referredBy,omitempty"`
+	Referrals  []Referral `json:"referrals,omitempty" bson:"referrals,omitempty"`
+}
+
+func (u *User) TrimUser() *Trim {
+	return &Trim{
+		Email:      u.Email,
+		Username:   u.Username,
+		ReferredBy: u.ReferredBy,
+		Referrals:  u.Referrals,
+	}
+}
+
+func (u *User) CreateUser() (any, error) {
+	user, err := mongodb.UserCollection.InsertOne(context.TODO(), u)
+	if err != nil {
+		return User{}, err
+	}
+	return user.InsertedID, err
+}
 
 func GetUserByEmail(email, password string) (*User, error) {
 	u := User{}

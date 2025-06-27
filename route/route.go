@@ -10,6 +10,7 @@ func RegisterAllRoutes(s *gin.Engine) {
 
 	r := s.Group("/")
 	r.Use(middleware.AuthMiddleware)
-	r.GET("/", controllers.Test)
-
+	r.POST("/sign-in", controllers.SignIn)
+	r.POST("/sign-out", controllers.SignOut)
+	r.POST("/sign-up", controllers.SignUp)
 }
