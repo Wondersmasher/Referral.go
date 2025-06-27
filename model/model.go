@@ -17,9 +17,11 @@ type Referral struct {
 	Username   string        `json:"username" bson:"username" validate:"required"`
 	Password   string        `json:"password" bson:"password" validate:"required"`
 	ReferredBy string        `json:"referredBy,omitempty" bson:"referredBy,omitempty"`
+	IPAddress  string        `json:"ipAddress" bson:"ipAddress"`
 }
 type User struct {
 	ID              bson.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	IPAddress       string        `json:"ipAddress" bson:"ipAddress"`
 	FirstName       string        `json:"firstName" bson:"firstName" validate:"required"`
 	LastName        string        `json:"lastName" bson:"lastName" validate:"required"`
 	Email           string        `json:"email" bson:"email" validate:"required"`
@@ -35,6 +37,7 @@ type Trim struct {
 	Email      string `json:"email" bson:"email" validate:"required"`
 	Username   string `json:"username" bson:"username" validate:"required"`
 	ReferredBy string `json:"referredBy,omitempty" bson:"referredBy,omitempty"`
+	IPAddress  string `json:"ipAddress" bson:"ipAddress"`
 	// Referrals  []Referral    `json:"referrals" bson:"referrals"`
 	ID         bson.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	FirstNam   string        `json:"firstName" bson:"firstName" validate:"required"`
@@ -52,6 +55,7 @@ func (u *User) TrimUser(isSuperTrim bool) *Trim {
 			ID:         u.ID,
 			FirstNam:   u.FirstName,
 			LastName:   u.LastName,
+			IPAddress:  u.IPAddress,
 		}
 	}
 	return &Trim{
@@ -60,9 +64,10 @@ func (u *User) TrimUser(isSuperTrim bool) *Trim {
 		ReferredBy: u.ReferredBy,
 		ReferralID: u.ReferralID,
 		// Referrals:  u.Referrals,
-		ID:       u.ID,
-		FirstNam: u.FirstName,
-		LastName: u.LastName,
+		ID:        u.ID,
+		FirstNam:  u.FirstName,
+		LastName:  u.LastName,
+		IPAddress: u.IPAddress,
 	}
 }
 
@@ -99,6 +104,14 @@ func (u *User) CreateUser(referrer string) (User, error) {
 			return User{}, errors.New("could not update referral for" + referrer)
 		}
 	}
+
+	// this is TODO:
+	// 	u.IPAddress = c.ClientIP()
+	// isValid := model.IsIPValid(u.IPAddress, u.ReferralID)
+	// if !isValid {
+	// 	c.JSON(400, utils.ApiErrorResponse("referer and referee cannot use same IP address"))
+	// 	return
+	// }
 	return *u, err
 }
 
@@ -151,4 +164,12 @@ func GetReferrals(id string) ([]Trim, error) {
 	}
 
 	return trims, nil
+}
+
+func IsIPUsed(IP string) bool {
+	u := User{}
+	filter := bson.D{{Key: "ipAddress", Value: IP}}
+
+	err := mongodb.UserCollection.FindOne(context.TODO(), filter).Decode(&u)
+	return err == nil
 }

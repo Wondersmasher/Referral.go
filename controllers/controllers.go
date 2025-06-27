@@ -22,7 +22,7 @@ func SignIn(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&u)
 	if err != nil {
-		c.JSON(400, utils.ApiErrorResponse("invalid credentials"))
+		c.JSON(400, utils.ApiErrorResponse(err.Error()))
 		return
 	}
 
@@ -33,7 +33,7 @@ func SignIn(c *gin.Context) {
 
 	foundUser, err := model.GetUserByEmail(u.Email, u.Password)
 	if err != nil {
-		c.JSON(400, utils.ApiErrorResponse("invalid credentials"))
+		c.JSON(400, utils.ApiErrorResponse("user not found"))
 		return
 	}
 
@@ -48,6 +48,7 @@ func SignIn(c *gin.Context) {
 		c.JSON(400, utils.ApiErrorResponse("could'nt generate refreshToken"))
 		return
 	}
+
 	c.SetCookie("accessToken", accessToken, int(time.Minute)*15, "/", "localhost", false, true)
 	c.SetCookie("refreshToken", refreshToken, int(time.Hour)*24*3, "/", "localhost", false, true)
 
@@ -67,10 +68,20 @@ func SignUp(c *gin.Context) {
 	user := model.User{}
 
 	err := c.ShouldBindJSON(&user)
+	user.IPAddress = c.ClientIP()
+
+	isUsed := model.IsIPUsed(user.IPAddress)
+
+	if isUsed {
+		c.JSON(400, utils.ApiErrorResponse("ip address is already used"))
+		return
+	}
+
 	if err != nil {
 		c.JSON(400, utils.ApiErrorResponse(err.Error()))
 		return
 	}
+
 	if user, err = user.CreateUser(user.ReferredBy); err != nil {
 		c.JSON(400, utils.ApiErrorResponse(err.Error()))
 		return
