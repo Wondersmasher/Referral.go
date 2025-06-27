@@ -75,17 +75,19 @@ func ApiSuccessWithPaginationResponse(data any, pagination any, message string) 
 
 type Claims struct {
 	jwt.RegisteredClaims
-	Email     string `json:"email"`
-	UserName  string `json:"username"`
-	CreatedAt string `json:"createdAt"`
+	Email      string `json:"email"`
+	UserName   string `json:"username"`
+	CreatedAt  string `json:"createdAt"`
+	ReferralID string `json:"referralID"`
 }
 
 func (c *Claims) NewClaims(duration time.Time) *Claims {
 
 	return &Claims{
-		Email:     c.Email,
-		UserName:  c.UserName,
-		CreatedAt: time.Now().String(),
+		Email:      c.Email,
+		UserName:   c.UserName,
+		ReferralID: c.ReferralID,
+		CreatedAt:  time.Now().String(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			ExpiresAt: jwt.NewNumericDate(duration),
@@ -96,7 +98,7 @@ func (c *Claims) NewClaims(duration time.Time) *Claims {
 		},
 	}
 }
-func CreateNewToken(email, userName string, duration time.Time, secretKey string) (string, error) {
+func CreateNewToken(email, userName, referralID string, duration time.Time, secretKey string) (string, error) {
 	claims := Claims{
 		Email:    email,
 		UserName: userName,

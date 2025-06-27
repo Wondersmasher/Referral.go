@@ -48,7 +48,7 @@ func InitDb() {
 }
 
 func EnsureUserEmailUniqueIndex(collection *mongo.Collection) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 
 	indexModel := mongo.IndexModel{

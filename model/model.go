@@ -8,6 +8,7 @@ import (
 	mongodb "github.com/Wondersmasher/Referral/mongoDb"
 	"github.com/Wondersmasher/Referral/utils"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type Referral struct {
@@ -118,16 +119,36 @@ func GetUserByEmail(email, password string) (*User, error) {
 	return &u, nil
 }
 
-func GetReferrals(id string) ([]User, error) {
+func GetReferrals(id string) ([]Trim, error) {
 	filter := bson.D{{Key: "referredBy", Value: id}}
-	// Retrieves documents that match the query filter
-	cursor, err := mongodb.UserCollection.Find(context.TODO(), filter)
+	projection := bson.D{
+		{Key: "email", Value: 1},
+		{Key: "username", Value: 1},
+		{Key: "referredBy", Value: 1},
+		{Key: "referralID", Value: 1},
+		{Key: "referrals", Value: 1},
+		{Key: "_id", Value: 1},
+		{Key: "firstName", Value: 1},
+		{Key: "lastName", Value: 1},
+	}
+	opts := options.Find().SetProjection(projection)
+	cursor, err := mongodb.UserCollection.Find(context.TODO(), filter, opts)
 	if err != nil {
 		return nil, err
 	}
-	u := []User{}
-	if err = cursor.All(context.TODO(), &u); err != nil {
+	defer cursor.Close(context.TODO())
+
+	var trims []Trim
+	for cursor.Next(context.TODO()) {
+		var t Trim
+		if err := cursor.Decode(&t); err != nil {
+			return nil, err
+		}
+		trims = append(trims, t)
+	}
+	if err := cursor.Err(); err != nil {
 		return nil, err
 	}
-	return u, nil
+
+	return trims, nil
 }

@@ -36,13 +36,13 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := utils.CreateNewToken(foundUser.Email, foundUser.Username, time.Now().Add(time.Minute*15), env.JWT_SECRET_ACCESS_KEY)
+	accessToken, err := utils.CreateNewToken(foundUser.Email, foundUser.Username, foundUser.ReferralID, time.Now().Add(time.Minute*15), env.JWT_SECRET_ACCESS_KEY)
 	if err != nil {
 		c.JSON(400, utils.ApiErrorResponse("could'nt generate accessToken"))
 		return
 	}
 
-	refreshToken, err := utils.CreateNewToken(foundUser.Email, foundUser.Username, time.Now().Add(time.Hour*24*3), env.JWT_SECRET_REFRESH_KEY)
+	refreshToken, err := utils.CreateNewToken(foundUser.Email, foundUser.Username, foundUser.ReferralID, time.Now().Add(time.Hour*24*3), env.JWT_SECRET_REFRESH_KEY)
 	if err != nil {
 		c.JSON(400, utils.ApiErrorResponse("could'nt generate refreshToken"))
 		return
@@ -80,18 +80,13 @@ func SignUp(c *gin.Context) {
 
 func GetReferrals(c *gin.Context) {
 	referredBy := c.Param("referredBy")
-	referrals, err := model.GetReferrals(referredBy)
-
-	if err != nil {
-		c.JSON(400, utils.ApiErrorResponse(err.Error()))
-		return
-	}
-
 	accessToken, err := c.Cookie("accessToken")
+
 	if err != nil {
 		c.JSON(400, utils.ApiErrorResponse(err.Error()))
 		return
 	}
+
 	claims, isValid, err := utils.ValidateToken(accessToken, env.JWT_SECRET_ACCESS_KEY)
 	if !isValid {
 		c.JSON(400, utils.ApiErrorResponse("invalid token"))
@@ -100,8 +95,14 @@ func GetReferrals(c *gin.Context) {
 	if err != nil {
 		c.JSON(400, utils.ApiErrorResponse(err.Error()))
 		return
-	} else {
-		fmt.Println(claims, isValid, err)
-		c.JSON(200, utils.ApiSuccessResponse(referrals, "success"))
 	}
+
+	referrals, err := model.GetReferrals(referredBy)
+	if err != nil {
+		c.JSON(400, utils.ApiErrorResponse(err.Error()))
+		return
+	}
+	fmt.Println(claims, isValid, err)
+	c.JSON(200, utils.ApiSuccessResponse(referrals, "success"))
+
 }
