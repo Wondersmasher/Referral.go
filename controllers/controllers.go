@@ -3,6 +3,7 @@ package controllers
 import (
 	// "fmt"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/Wondersmasher/Referral/env"
@@ -79,7 +80,25 @@ func SignUp(c *gin.Context) {
 }
 
 func GetReferrals(c *gin.Context) {
+	max := 5
 	referredBy := c.Param("referredBy")
+	depthStr := c.DefaultQuery("depth", "1")
+
+	depth, err := strconv.Atoi(depthStr)
+
+	if err != nil {
+		c.JSON(400, utils.ApiErrorResponse("invalid depth"))
+		return
+	}
+	if depth < 1 {
+		c.JSON(400, utils.ApiErrorResponse("minimum depth is 1"))
+		return
+	}
+
+	if depth > max {
+		c.JSON(400, utils.ApiErrorResponse(fmt.Sprintf("maximum depth is %d", max)))
+		return
+	}
 	// accessToken, err := c.Cookie("accessToken")
 
 	// if err != nil {
@@ -103,6 +122,9 @@ func GetReferrals(c *gin.Context) {
 		return
 	}
 	// fmt.Println(claims, isValid, err)
-	c.JSON(200, utils.ApiSuccessResponse(referrals, "success"))
+	c.JSON(200, utils.ApiSuccessResponse(gin.H{
+		"referrals": referrals,
+		"depth":     depth,
+	}, "success"))
 
 }

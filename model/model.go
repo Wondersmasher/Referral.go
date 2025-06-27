@@ -28,14 +28,14 @@ type User struct {
 	ConfirmPassword string        `json:"confirmPassword" bson:"confirmPassword,omitempty" validate:"required"`
 	ReferredBy      string        `json:"referredBy,omitempty" bson:"referredBy,omitempty"`
 	ReferralID      string        `json:"referralID,omitempty" bson:"referralID,omitempty"`
-	Referrals       []Referral    `json:"referrals" bson:"referrals"`
+	// Referrals       []Referral    `json:"referrals" bson:"referrals"`
 }
 
 type Trim struct {
-	Email      string        `json:"email" bson:"email" validate:"required"`
-	Username   string        `json:"username" bson:"username" validate:"required"`
-	ReferredBy string        `json:"referredBy,omitempty" bson:"referredBy,omitempty"`
-	Referrals  []Referral    `json:"referrals" bson:"referrals"`
+	Email      string `json:"email" bson:"email" validate:"required"`
+	Username   string `json:"username" bson:"username" validate:"required"`
+	ReferredBy string `json:"referredBy,omitempty" bson:"referredBy,omitempty"`
+	// Referrals  []Referral    `json:"referrals" bson:"referrals"`
 	ID         bson.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	FirstNam   string        `json:"firstName" bson:"firstName" validate:"required"`
 	ReferralID string        `json:"referralID" bson:"referralID"`
@@ -59,10 +59,10 @@ func (u *User) TrimUser(isSuperTrim bool) *Trim {
 		Username:   u.Username,
 		ReferredBy: u.ReferredBy,
 		ReferralID: u.ReferralID,
-		Referrals:  u.Referrals,
-		ID:         u.ID,
-		FirstNam:   u.FirstName,
-		LastName:   u.LastName,
+		// Referrals:  u.Referrals,
+		ID:       u.ID,
+		FirstNam: u.FirstName,
+		LastName: u.LastName,
 	}
 }
 
@@ -73,7 +73,7 @@ func (u *User) CreateUser(referrer string) (User, error) {
 
 	u.Password, _ = utils.HashPassword(u.Password)
 	u.ConfirmPassword = ""
-	u.Referrals = []Referral{}
+	// u.Referrals = []Referral{}
 	referralID, err := utils.GenerateReferralID()
 	if referrer == "" {
 		u.ReferredBy = referrer
@@ -126,7 +126,7 @@ func GetReferrals(id string) ([]Trim, error) {
 		{Key: "username", Value: 1},
 		{Key: "referredBy", Value: 1},
 		{Key: "referralID", Value: 1},
-		{Key: "referrals", Value: 1},
+		// {Key: "referrals", Value: 1},
 		{Key: "_id", Value: 1},
 		{Key: "firstName", Value: 1},
 		{Key: "lastName", Value: 1},

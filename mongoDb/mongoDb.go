@@ -33,17 +33,18 @@ func InitDb() {
 
 	// fmt.Println("Connected to MongoDB...")
 	fmt.Println("Connecting to MongoDB...")
+	fmt.Println(env.MONGO_DB_URL, env.MONGO_DB_DATABASE, env.MONGO_DB_COLLECTION)
 	client, _ := mongo.Connect(options.Client().ApplyURI(env.MONGO_DB_URL))
 	UserCollection = client.Database(env.MONGO_DB_DATABASE).Collection(env.MONGO_DB_COLLECTION)
 	// err := UserCollection.Drop(context.TODO())
 	// if err != nil {
 	// 	fmt.Println("Error dropping db", err)
 	// }
-	err := EnsureUserEmailUniqueIndex(UserCollection)
+	// err := EnsureUserEmailUniqueIndex(UserCollection)
 
-	if err != nil {
-		fmt.Println("Error connecting to MongoDB for unique email", err)
-	}
+	// if err != nil {
+	// 	fmt.Println("Error connecting to MongoDB for unique email", err)
+	// }
 	fmt.Println("Connected to MongoDB...")
 }
 
