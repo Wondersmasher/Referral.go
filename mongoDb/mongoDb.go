@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	// "github.com/Wondersmasher/Referral/env"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -13,19 +14,36 @@ import (
 var UserCollection *mongo.Collection
 
 func InitDb() {
-	client, err := mongo.Connect(options.Client().ApplyURI("mongodb://localhost:27017"))
+	// fmt.Println("Connecting to MongoDB...")
+	// fmt.Println(env.MONGO_DB_COLLECTION, env.MONGO_DB_DATABASE, env.MONGO_DB_URL)
+	// client, err := mongo.Connect(options.Client().ApplyURI(env.MONGO_DB_URL))
 
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// UserCollection = client.Database(env.MONGO_DB_DATABASE).Collection(env.MONGO_DB_COLLECTION)
+
+	// fmt.Println(client)
+	// err = EnsureUserEmailUniqueIndex(UserCollection)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// fmt.Println("Connected to MongoDB...")
+	fmt.Println("Connecting to MongoDB...")
+	client, _ := mongo.Connect(options.Client().ApplyURI("mongodb+srv://wondersmasher:.E.79kFRqzt57pW@golang.ydf6sqc.mongodb.net/?retryWrites=true&w=majority&appName=Golang"))
+	UserCollection = client.Database("Golang").Collection("user")
+	err := UserCollection.Drop(context.TODO())
 	if err != nil {
-		panic(err)
+		fmt.Println("Error dropping db", err)
 	}
-
-	UserCollection = client.Database("test").Collection("test")
-
-	fmt.Println(client)
 	err = EnsureUserEmailUniqueIndex(UserCollection)
+
 	if err != nil {
-		panic(err)
+		fmt.Println("Error connecting to MongoDB for unique email", err)
 	}
+	fmt.Println("Connected to MongoDB...")
 }
 
 func EnsureUserEmailUniqueIndex(collection *mongo.Collection) error {
