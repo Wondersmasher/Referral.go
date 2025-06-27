@@ -7,11 +7,12 @@ import (
 )
 
 func RegisterAllRoutes(s *gin.Engine) {
+	public := s.Group("/")
+	public.POST("/sign-in", controllers.SignIn)
+	public.POST("/sign-up", controllers.SignUp)
 
-	r := s.Group("/")
-	r.Use(middleware.AuthMiddleware)
-	r.POST("/sign-in", controllers.SignIn)
-	r.POST("/sign-out", controllers.SignOut)
-	r.POST("/sign-up", controllers.SignUp)
-	r.GET("/referrals/:referredBy", controllers.GetReferrals)
+	protected := s.Group("/")
+	protected.Use(middleware.AuthMiddleware)
+	protected.POST("/sign-out", controllers.SignOut)
+	protected.GET("/referrals/:referredBy", controllers.GetReferrals)
 }

@@ -80,29 +80,29 @@ func SignUp(c *gin.Context) {
 
 func GetReferrals(c *gin.Context) {
 	referredBy := c.Param("referredBy")
-	accessToken, err := c.Cookie("accessToken")
+	// accessToken, err := c.Cookie("accessToken")
 
-	if err != nil {
-		c.JSON(400, utils.ApiErrorResponse(err.Error()))
-		return
-	}
+	// if err != nil {
+	// 	c.JSON(400, utils.ApiErrorResponse(err.Error()))
+	// 	return
+	// }
 
-	claims, isValid, err := utils.ValidateToken(accessToken, env.JWT_SECRET_ACCESS_KEY)
-	if !isValid {
-		c.JSON(400, utils.ApiErrorResponse("invalid token"))
-		return
-	}
-	if err != nil {
-		c.JSON(400, utils.ApiErrorResponse(err.Error()))
-		return
-	}
+	// claims, isValid, err := utils.ValidateToken(accessToken, env.JWT_SECRET_ACCESS_KEY)
+	// if !isValid {
+	// 	c.JSON(400, utils.ApiErrorResponse("invalid token"))
+	// 	return
+	// }
+	// if err != nil {
+	// 	c.JSON(400, utils.ApiErrorResponse(err.Error()))
+	// 	return
+	// }
 
 	referrals, err := model.GetReferrals(referredBy)
 	if err != nil {
 		c.JSON(400, utils.ApiErrorResponse(err.Error()))
 		return
 	}
-	fmt.Println(claims, isValid, err)
+	// fmt.Println(claims, isValid, err)
 	c.JSON(200, utils.ApiSuccessResponse(referrals, "success"))
 
 }
