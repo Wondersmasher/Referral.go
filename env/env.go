@@ -15,6 +15,7 @@ var (
 	REDIS_ADDRESS       string
 	REDIS_USERNAME      string
 	REDIS_DB            int64
+	REDIS_PASSWORD      string
 )
 
 func Env() {
@@ -26,6 +27,7 @@ func Env() {
 	PORT = os.Getenv("PORT")
 	REDIS_ADDRESS = os.Getenv("REDIS_ADDRESS")
 	REDIS_USERNAME = os.Getenv("REDIS_USERNAME")
+	REDIS_PASSWORD = os.Getenv("REDIS_PASSWORD")
 	r, err := strconv.ParseInt(os.Getenv("REDIS_DB"), 10, 64)
 	if err != nil {
 		panic(err)
