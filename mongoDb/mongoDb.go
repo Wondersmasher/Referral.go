@@ -34,11 +34,11 @@ func InitDb() {
 	fmt.Println("Connecting to MongoDB...")
 	client, _ := mongo.Connect(options.Client().ApplyURI("mongodb+srv://wondersmasher:.E.79kFRqzt57pW@golang.ydf6sqc.mongodb.net/?retryWrites=true&w=majority&appName=Golang"))
 	UserCollection = client.Database("Golang").Collection("user")
-	err := UserCollection.Drop(context.TODO())
-	if err != nil {
-		fmt.Println("Error dropping db", err)
-	}
-	err = EnsureUserEmailUniqueIndex(UserCollection)
+	// err := UserCollection.Drop(context.TODO())
+	// if err != nil {
+	// 	fmt.Println("Error dropping db", err)
+	// }
+	err := EnsureUserEmailUniqueIndex(UserCollection)
 
 	if err != nil {
 		fmt.Println("Error connecting to MongoDB for unique email", err)

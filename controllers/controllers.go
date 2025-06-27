@@ -25,6 +25,11 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
+	if u.Email == "" || u.Password == "" {
+		c.JSON(400, utils.ApiErrorResponse("email and password are required"))
+		return
+	}
+
 	foundUser, err := model.GetUserByEmail(u.Email, u.Password)
 	if err != nil {
 		c.JSON(400, utils.ApiErrorResponse("invalid credentials"))
@@ -46,7 +51,7 @@ func SignIn(c *gin.Context) {
 	c.SetCookie("refreshToken", refreshToken, int(time.Hour)*24*3, "/", "localhost", false, true)
 
 	// fmt.Println(accessToken, refreshToken)
-	c.JSON(200, utils.ApiSuccessResponse(foundUser.TrimUser(), "success"))
+	c.JSON(200, utils.ApiSuccessResponse(foundUser.TrimUser(false), "success"))
 }
 
 func SignOut(c *gin.Context) {
@@ -58,9 +63,45 @@ func SignOut(c *gin.Context) {
 }
 
 func SignUp(c *gin.Context) {
+	user := model.User{}
 
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		c.JSON(400, utils.ApiErrorResponse(err.Error()))
+		return
+	}
+	if user, err = user.CreateUser(user.ReferredBy); err != nil {
+		c.JSON(400, utils.ApiErrorResponse(err.Error()))
+		return
+	}
+
+	c.JSON(200, utils.ApiSuccessResponse(user.TrimUser(false), "success"))
 }
 
 func GetReferrals(c *gin.Context) {
+	referredBy := c.Param("referredBy")
+	referrals, err := model.GetReferrals(referredBy)
 
+	if err != nil {
+		c.JSON(400, utils.ApiErrorResponse(err.Error()))
+		return
+	}
+
+	accessToken, err := c.Cookie("accessToken")
+	if err != nil {
+		c.JSON(400, utils.ApiErrorResponse(err.Error()))
+		return
+	}
+	claims, isValid, err := utils.ValidateToken(accessToken, env.JWT_SECRET_ACCESS_KEY)
+	if !isValid {
+		c.JSON(400, utils.ApiErrorResponse("invalid token"))
+		return
+	}
+	if err != nil {
+		c.JSON(400, utils.ApiErrorResponse(err.Error()))
+		return
+	} else {
+		fmt.Println(claims, isValid, err)
+		c.JSON(200, utils.ApiSuccessResponse(referrals, "success"))
+	}
 }

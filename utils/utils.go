@@ -4,7 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 	"time"
+
+	"crypto/rand"
+	"math/big"
 
 	"github.com/Wondersmasher/Referral/env"
 	"github.com/golang-jwt/jwt/v5"
@@ -97,7 +101,6 @@ func CreateNewToken(email, userName string, duration time.Time, secretKey string
 		Email:    email,
 		UserName: userName,
 	}
-	time.Now()
 
 	val, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims.NewClaims(duration)).SignedString([]byte(secretKey))
 
@@ -130,4 +133,20 @@ func ValidateToken(tokenString string, secretKey string) (*Claims, bool, error) 
 	} else {
 		return nil, false, fmt.Errorf("invalid token")
 	}
+}
+
+func GenerateReferralID() (string, error) {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	const idLength = 6
+	result := make([]byte, idLength)
+
+	for i := 0; i < idLength; i++ {
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		if err != nil {
+			return "", err
+		}
+		result[i] = charset[num.Int64()]
+	}
+
+	return "REF-GO-" + strings.ToUpper(string(result)), nil
 }

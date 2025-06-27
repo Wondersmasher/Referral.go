@@ -13,4 +13,5 @@ func RegisterAllRoutes(s *gin.Engine) {
 	r.POST("/sign-in", controllers.SignIn)
 	r.POST("/sign-out", controllers.SignOut)
 	r.POST("/sign-up", controllers.SignUp)
+	r.GET("/referrals/:referredBy", controllers.GetReferrals)
 }
