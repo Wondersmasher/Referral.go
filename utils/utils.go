@@ -10,7 +10,11 @@ import (
 	"crypto/rand"
 	"math/big"
 
+	"reflect"
+	"strconv"
+
 	"github.com/Wondersmasher/Referral/env"
+	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -52,8 +56,8 @@ func CheckStrongPassword(password string) error {
 	return nil
 }
 
-func ApiErrorResponse(err string) map[string]string {
-	return map[string]string{
+func ApiErrorResponse(err any) map[string]any {
+	return map[string]any{
 		"error": err,
 	}
 }
@@ -151,4 +155,60 @@ func GenerateReferralID() (string, error) {
 	}
 
 	return "REF-GO-" + strings.ToUpper(string(result)), nil
+}
+
+type ValidationError struct {
+	Error     string `json:"error"`
+	Key       string `json:"key"`
+	Condition string `json:"condition"`
+}
+
+func ValidateBodyRequest(payload interface{}) []*ValidationError {
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	var errors []*ValidationError
+	err := validate.Struct(payload)
+	validationErrors, ok := err.(validator.ValidationErrors)
+
+	if ok {
+		reflected := reflect.ValueOf(payload)
+
+		for _, validationErr := range validationErrors {
+			field, _ := reflected.Type().FieldByName(validationErr.StructField())
+
+			key := field.Tag.Get("json")
+			if key == "" {
+				key = strings.ToLower(validationErr.StructField())
+			}
+			condition := validationErr.Tag()
+			keyToTitleCase := strings.Replace(key, "_", " ", -1)
+			param := validationErr.Param()
+			errMessage := keyToTitleCase + " field is " + condition
+
+			switch condition {
+			case "required":
+				errMessage = keyToTitleCase + " is required"
+			case "email":
+				errMessage = keyToTitleCase + " must be a valid email address"
+			case "min":
+				if _, err := strconv.Atoi(param); err == nil {
+					errMessage = fmt.Sprintf("%s must be at least %s characters", keyToTitleCase, param)
+				}
+			case "max":
+				if _, err := strconv.Atoi(param); err == nil {
+					errMessage = fmt.Sprintf("%s must be at ost %s characters", keyToTitleCase, param)
+				}
+			case "eqfield":
+				errMessage = keyToTitleCase + " must be equal to " + strings.ToLower(param)
+			}
+
+			currentValidationError := &ValidationError{
+				Error:     errMessage,
+				Key:       key,
+				Condition: condition,
+			}
+			errors = append(errors, currentValidationError)
+		}
+	}
+
+	return errors
 }

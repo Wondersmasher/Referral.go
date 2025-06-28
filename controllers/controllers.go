@@ -25,6 +25,12 @@ func SignIn(c *gin.Context) {
 		c.JSON(400, utils.ApiErrorResponse(err.Error()))
 		return
 	}
+	errs := utils.ValidateBodyRequest(u)
+
+	if len(errs) > 0 {
+		c.JSON(400, utils.ApiErrorResponse(errs))
+		return
+	}
 
 	if u.Email == "" || u.Password == "" {
 		c.JSON(400, utils.ApiErrorResponse("email and password are required"))
