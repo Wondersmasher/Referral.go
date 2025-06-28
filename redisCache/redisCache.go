@@ -15,7 +15,7 @@ func InitRedis() {
 		Addr:     env.REDIS_ADDRESS,
 		Username: env.REDIS_USERNAME,
 		Password: env.REDIS_PASSWORD,
-		DB:       int(env.REDIS_DB),
+		DB:       0,
 	})
 
 	v := rdb.Set(ctx, "foo", "bar", 60*3*60)

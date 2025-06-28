@@ -2,7 +2,7 @@ package env
 
 import (
 	"os"
-	"strconv"
+	// "strconv"
 )
 
 var (
@@ -15,8 +15,8 @@ var (
 	MONGO_DB_COLLECTION    string
 	REDIS_ADDRESS          string
 	REDIS_USERNAME         string
-	REDIS_DB               int64
-	REDIS_PASSWORD         string
+	// REDIS_DB               int64
+	REDIS_PASSWORD string
 )
 
 func Env() {
@@ -30,12 +30,12 @@ func Env() {
 	REDIS_ADDRESS = os.Getenv("REDIS_ADDRESS")
 	REDIS_USERNAME = os.Getenv("REDIS_USERNAME")
 	REDIS_PASSWORD = os.Getenv("REDIS_PASSWORD")
-	r, err := strconv.ParseInt(os.Getenv("REDIS_DB"), 10, 64)
-	if err != nil {
-		panic(err)
-	}
+	// r, err := strconv.ParseInt(os.Getenv("REDIS_DB"), 10, 64)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	REDIS_DB = r
+	// REDIS_DB = r
 
 	// if MONGO_DB_URL == "" || SALT == "" || JWT_SECRET_KEY == "" || PORT == "" || MONGO_DB_DATABASE == "" || MONGO_DB_COLLECTION == "" {
 	// 	panic("Missing environment variables")
