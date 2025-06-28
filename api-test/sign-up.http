@@ -2,11 +2,11 @@ POST http://localhost:8080/sign-up
 Content-Type: application/json
 
 {
-    "email":"wjk@gmail.com",
+    "email":"whjfasdfasdfkljlk@gmail.com",
     "password": "Test@1234",
     "confirmPassword":"Test@1234",
-    "firstName":"Tester",
-    "lastName" :"1234!",
-    "userName":"werna",
-    "referredBy" :"REF-GO-XT2SBV"
+    "firstName":"Werna",
+    "lastName" :"Tester2",
+    "userName":"Werna",
+    "referredBy" :"REF-GO-O1LC2V"
 }

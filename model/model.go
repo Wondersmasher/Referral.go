@@ -13,7 +13,7 @@ import (
 
 type Referral struct {
 	ID         bson.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Email      string        `json:"email" bson:"email" validate:"required"`
+	Email      string        `json:"email" bson:"email" validate:"required,email"`
 	Username   string        `json:"username" bson:"username" validate:"required"`
 	Password   string        `json:"password" bson:"password" validate:"required"`
 	ReferredBy string        `json:"referredBy,omitempty" bson:"referredBy,omitempty"`
@@ -24,17 +24,17 @@ type User struct {
 	IPAddress       string        `json:"ipAddress" bson:"ipAddress"`
 	FirstName       string        `json:"firstName" bson:"firstName" validate:"required"`
 	LastName        string        `json:"lastName" bson:"lastName" validate:"required"`
-	Email           string        `json:"email" bson:"email" validate:"required"`
+	Email           string        `json:"email" bson:"email" validate:"required,email"`
 	Username        string        `json:"username" bson:"username" validate:"required"`
 	Password        string        `json:"password" bson:"password" validate:"required"`
-	ConfirmPassword string        `json:"confirmPassword" bson:"confirmPassword,omitempty" validate:"required"`
+	ConfirmPassword string        `json:"confirmPassword" bson:"confirmPassword,omitempty" validate:"required,eqfield=Password"`
 	ReferredBy      string        `json:"referredBy,omitempty" bson:"referredBy,omitempty"`
 	ReferralID      string        `json:"referralID,omitempty" bson:"referralID,omitempty"`
 	// Referrals       []Referral    `json:"referrals" bson:"referrals"`
 }
 
 type Trim struct {
-	Email      string `json:"email" bson:"email" validate:"required"`
+	Email      string `json:"email" bson:"email" validate:"required,email"`
 	Username   string `json:"username" bson:"username" validate:"required"`
 	ReferredBy string `json:"referredBy,omitempty" bson:"referredBy,omitempty"`
 	IPAddress  string `json:"ipAddress" bson:"ipAddress"`

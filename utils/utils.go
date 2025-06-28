@@ -158,9 +158,9 @@ func GenerateReferralID() (string, error) {
 }
 
 type ValidationError struct {
-	Error     string `json:"error"`
-	Key       string `json:"key"`
-	Condition string `json:"condition"`
+	Error string `json:"error"`
+	Key   string `json:"key"`
+	// Condition string `json:"condition"`
 }
 
 func ValidateBodyRequest(payload interface{}) []*ValidationError {
@@ -202,9 +202,9 @@ func ValidateBodyRequest(payload interface{}) []*ValidationError {
 			}
 
 			currentValidationError := &ValidationError{
-				Error:     errMessage,
-				Key:       key,
-				Condition: condition,
+				Error: errMessage,
+				Key:   key,
+				// Condition: condition,
 			}
 			errors = append(errors, currentValidationError)
 		}

@@ -25,10 +25,10 @@ func SignIn(c *gin.Context) {
 		c.JSON(400, utils.ApiErrorResponse(err.Error()))
 		return
 	}
-	errs := utils.ValidateBodyRequest(u)
+	validationErrors := utils.ValidateBodyRequest(u)
 
-	if len(errs) > 0 {
-		c.JSON(400, utils.ApiErrorResponse(errs))
+	if len(validationErrors) > 0 {
+		c.JSON(400, utils.ApiErrorResponse(validationErrors))
 		return
 	}
 
@@ -87,6 +87,12 @@ func SignUp(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&user)
 	user.IPAddress = c.ClientIP()
+
+	validationErrors := utils.ValidateBodyRequest(user)
+	if len(validationErrors) > 0 {
+		c.JSON(400, utils.ApiErrorResponse(validationErrors))
+		return
+	}
 
 	// isUsed := model.IsIPUsed(user.IPAddress)
 
