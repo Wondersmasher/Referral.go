@@ -22,6 +22,8 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
 
+	// Allow all origins (for development)
+
 	env.Env()
 	mongodb.InitDb()
 	// redisCache.InitRedis()
