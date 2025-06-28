@@ -37,13 +37,25 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := utils.CreateNewToken(foundUser.Email, foundUser.Username, foundUser.ReferralID, time.Now().Add(time.Minute*15), env.JWT_SECRET_ACCESS_KEY)
+	accessToken, err := utils.CreateNewToken(
+		foundUser.Email,
+		foundUser.Username,
+		foundUser.ReferralID,
+		time.Now().Add(time.Minute*15),
+		env.JWT_SECRET_ACCESS_KEY,
+	)
 	if err != nil {
 		c.JSON(400, utils.ApiErrorResponse("could'nt generate accessToken"))
 		return
 	}
 
-	refreshToken, err := utils.CreateNewToken(foundUser.Email, foundUser.Username, foundUser.ReferralID, time.Now().Add(time.Hour*24*3), env.JWT_SECRET_REFRESH_KEY)
+	refreshToken, err := utils.CreateNewToken(
+		foundUser.Email,
+		foundUser.Username,
+		foundUser.ReferralID,
+		time.Now().Add(time.Hour*24*3),
+		env.JWT_SECRET_REFRESH_KEY,
+	)
 	if err != nil {
 		c.JSON(400, utils.ApiErrorResponse("could'nt generate refreshToken"))
 		return
