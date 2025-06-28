@@ -94,12 +94,12 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	// isUsed := model.IsIPUsed(user.IPAddress)
+	isUsed := model.IsIPUsed(user.IPAddress)
 
-	// if isUsed {
-	// 	c.JSON(400, utils.ApiErrorResponse("ip address is already used"))
-	// 	return
-	// }
+	if isUsed {
+		c.JSON(400, utils.ApiErrorResponse("ip address is already used"))
+		return
+	}
 
 	if err != nil {
 		c.JSON(400, utils.ApiErrorResponse(err.Error()))
